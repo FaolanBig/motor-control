@@ -65,18 +65,19 @@ void switchPair(int HBX[4], bool direction = false, bool off = false)
     }
     else
     {
-        if (direction)
-        {
-            level = HIGH; 
-            level2 = LOW;
-        }
-        else 
-        { 
-            level = LOW;
-            level2 = HIGH;
-        }
+        // if (direction)
+        // {
+        //     level = HIGH; 
+        //     level2 = LOW;
+        // }
+        // else 
+        // { 
+        //     level = LOW;
+        //     level2 = HIGH;
+        // }
+        level = direction ? HIGH : LOW;
+        level2 = direction ? LOW : HIGH;
     }
-    // level = inverted ? HIGH : LOW;
     
     for (int i = 0; i < 2; i++)
     {
