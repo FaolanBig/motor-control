@@ -15,6 +15,9 @@ volatile bool HBX_second_half = false;
 // interrupt array
 int HBX_interrupt_pins[] = { 18, 19, 20 };
 
+// function prototypes
+void switchPair(int HBX[4], bool direction = false, bool off = false);
+
 void setup()
 {
     for (auto &&i : HBA) { pinMode(i, OUTPUT); }
