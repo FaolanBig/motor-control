@@ -65,48 +65,32 @@ void switchPair(int HBX[4], bool direction = false, bool off = false)
     }
     else
     {
-        // if (direction)
-        // {
-        //     level = HIGH; 
-        //     level2 = LOW;
-        // }
-        // else 
-        // { 
-        //     level = LOW;
-        //     level2 = HIGH;
-        // }
         level = direction ? HIGH : LOW;
         level2 = direction ? LOW : HIGH;
     }
     
     for (int i = 0; i < 2; i++)
     {
-        pinMode(HBX[i * 2], level); // normal level
+        pinMode(HBX[i * 2], level);
     }
     for (int i = 0; i < 2; i++)
     {
-        pinMode(HBX[(i * 2) + 1], level2); // usually inverted level
+        pinMode(HBX[(i * 2) + 1], level2);
     }
 }
 
 void switch_A()
 {
-    // if (HBX_second_half) { HBX_cycle_state = 0; }
-    // else { HBX_cycle_state = 3; }
     HBX_cycle_state = 0;
     HBX_second_half = !HBX_second_half;
 }
 void switch_B()
 {
-    // if (HBX_second_half) { HBX_cycle_state = 1; }
-    // else { HBX_cycle_state = 4; }
     HBX_cycle_state = 1;
     HBX_second_half = !HBX_second_half;
 }
 void switch_C()
 {
-    // if (HBX_second_half) { HBX_cycle_state = 2; }
-    // else { HBX_cycle_state = 5; }
     HBX_cycle_state = 2;
     HBX_second_half = !HBX_second_half;
 }
