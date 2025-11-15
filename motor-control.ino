@@ -26,8 +26,8 @@ void setup()
 
     // initializing interrupts
     attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[0]), switch_A, RISING); // A
-    attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[0]), switch_B, RISING); // B
-    attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[0]), switch_C, RISING); // C
+    attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[1]), switch_B, RISING); // B
+    attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[2]), switch_C, RISING); // C
 }
 
 void loop()
