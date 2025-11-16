@@ -16,7 +16,7 @@ volatile bool HBX_second_half = false;
 int HBX_interrupt_pins[] = { 18, 19, 20 };
 
 // function prototypes
-void switchPair(int HBX[4], bool direction = false, bool off = false); // might commeent this out if compiling and uploading with Arduino IDE
+void switchPair(int HBX[4], bool direction = false, bool off = false); // might comment this out if compiling and uploading with Arduino IDE
 
 void setup()
 {
