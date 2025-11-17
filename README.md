@@ -207,3 +207,9 @@ The main loop continuously applies output levels based on global state values. T
 * Never activate both high-side switches simultaneously
 * Only use drivers with built-in dead-time or add firmware-based timing
 * Confirm current capability and thermal limits of the driver hardware
+
+## 8. License and Copyright Notice
+
+This project is licensed under the GNU Afferro General Public License to Carl Öttinger
+
+Copyright \copyright 2025 by Carl Öttinger
