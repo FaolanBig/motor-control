@@ -1,5 +1,5 @@
-#define FORWARDS = true
-#define BACKWARDS = false
+#define FORWARDS true
+#define BACKWARDS false
 
 // { switch A1, A2, B1, B2. interrupt pin }
 int HBA[] = {2, 3, 4, 5};
@@ -8,7 +8,7 @@ int HBC[] = {10, 11, 12, 13};
 
 
 // switching params
-volatile bool HBX_to_switch[] = { false, false, false };
+// volatile bool HBX_to_switch[] = { false, false, false };
 volatile int HBX_cycle_state = 0;
 volatile bool HBX_second_half = false;
 
@@ -56,9 +56,9 @@ void loop()
 
 void switchPair(int HBX[4], bool direction = false, bool off = false)
 {
-    auto level = HIGH;
-    auto level2 = HIGH;
-    if (off)
+    auto level = LOW;
+    auto level2 = LOW;
+    /*if (off)
     {
         level = LOW;
         level2 = LOW;
@@ -71,12 +71,24 @@ void switchPair(int HBX[4], bool direction = false, bool off = false)
     
     for (int i = 0; i < 2; i++)
     {
-        pinMode(HBX[i * 2], level);
+        digitalWrite(HBX[i * 2], level);
     }
     for (int i = 0; i < 2; i++)
     {
-        pinMode(HBX[(i * 2) + 1], level2);
+        digitalWrite(HBX[(i * 2) + 1], level2);
+    }*/
+    if (!off)
+    {
+        level = direction ? HIGH : LOW;   // A1, A2
+        level2 = direction ? LOW : HIGH;   // B1, B2
     }
+    // A1, A2
+    digitalWrite(HBX[0], level);
+    digitalWrite(HBX[1], level);
+
+    // B1, B2
+    digitalWrite(HBX[2], level2);
+    digitalWrite(HBX[3], level2);
 }
 
 void switch_A()
