@@ -1,100 +1,200 @@
-# H-Bridge Switching System
+H-Bridge Switching System
 
-This project implements an Arduino-based control system for three H-Bridge driver stages (HBA, HBB, and HBC).
-Each H-Bridge is controlled through four digital output pins (A1, A2, B1, B2), while three external interrupt inputs trigger state transitions.
-The system is suitable for driving multiphase loads, commutated motors, or any application that requires structured phase control.
+This project provides an Arduino-based controller for three H-Bridge stages (HBA, HBB, HBC).
+The switching logic is interrupt-driven and implements a six-step commutation pattern suitable for multi-phase loads such as BLDC motors or similar phase-driven systems.
 
-## Features
+The following documentation describes system architecture, pin assignments, commutation behavior, timing, and advanced usage options.
 
-Control of three independent H-Bridges
+1. System Architecture (ASCII Block Diagram)
+```
+                      +-----------------------+
+                      |       Arduino         |
+                      |   (e.g. Mega 2560)    |
+                      +----------+------------+
+                                 |
+                                 |
+                +----------------+----------------+
+                |                |                |
+        Interrupt A        Interrupt B      Interrupt C
+            Pin 18            Pin 19            Pin 20
+                |                |                |
+        +-------+-------+ +------+-------+ +------+-------+
+        |  ISR switch_A | | ISR switch_B | | ISR switch_C |
+        +-------+-------+ +------+-------+ +------+-------+
+                |                |                |
+                +---------+------+---------+------+
+                          |                |
+            HBX_cycle_state (0–2)     HBX_second_half (polarity)
+                          |                |
+                    +-----+----------------+------+
+                    |  Switching Logic (loop)     |
+                    +---------------+-------------+
+                                    |
+                 +------------------+------------------+
+                 |                  |                  |
+           +-----+-----+      +-----+-----+      +-----+-----+
+           |   HBA     |      |   HBB     |      |   HBC     |
+           +-----------+      +-----------+      +-----------+
+           | A1 A2 B1 B2      | A1 A2 B1 B2      | A1 A2 B1 B2
+           | 2  3  4  5       | 6  7  8  9       | 10 11 12 13
+           +------------------+------------------+-------------+
+```
+3. Switching-State Diagram (6-Step Sequence)
+```
+           ┌────────────────────────────────────────┐
+           │               STATE FLOW               │
+           └────────────────────────────────────────┘
 
-Phase switching through external interrupt inputs
+                +---------+        +---------+        +---------+
+                | State 0 | -----> | State 1 | -----> | State 2 |
+                +----+----+        +----+----+        +----+----+
+                     ^                  ^                  ^
+                     |                  |                  |
+                     |                  |                  |
+                +----+------------------+------------------+----+
+                |               Polarity Toggle                |
+                |         (HBX_second_half ^= 1)               |
+                +----------------------------------------------+
+```
+Each state has:
+  - Normal version
+  - Inverted version (second_half = 1)
 
-Six-step switching pattern (three main phases, each with an inverted state)
 
-Clean separation of hardware abstraction via arrays
+This yields the following 6-step commutation:
+```
+0 → 0' → 1 → 1' → 2 → 2' → repeat
+(0' = inverted polarity of 0)
+```
+3. Pinout Reference
+H-Bridge Pin Assignment Table
+```
++-----------+---------+---------+---------+---------+
+| H-Bridge |   A1    |   A2    |   B1    |   B2    |
++-----------+---------+---------+---------+---------+
+|   HBA     |    2    |    3    |    4    |    5    |
+|   HBB     |    6    |    7    |    8    |    9    |
+|   HBC     |   10    |   11    |   12    |   13    |
++-----------+---------+---------+---------+---------+
+```
+Interrupt Pin Assignment Table
+```
++-----------+--------+
+| Interrupt |  Pin   |
++-----------+--------+
+| A         |   18   |
+| B         |   19   |
+| C         |   20   |
++-----------+--------+
+```
+4. Commutation Diagram (Waveform Overview)
 
-Efficient interrupt-driven state management
+Below is a conceptual representation of a phase switching pattern for 6-step commutation:
+```
+Time --->
 
-## Hardware Overview
-H-Bridge Output Pins
+State:   0    0'    1    1'    2    2'
 
-Each H-Bridge is defined by four pins:
+HBA:    ++++ ----  .... ....  **** ****
+HBB:    .... ....  ++++ ----  .... ....
+HBC:    .... ....  .... ....  ++++ ----
 
-H-Bridge	Pins
-HBA	2, 3, 4, 5
-HBB	6, 7, 8, 9
-HBC	10, 11, 12, 13
+Legend:
+  ++++ = forward polarity
+  ---- = reverse polarity
+  .... = off
+  **** = polarity depends on half-cycle
 
-These pins are configured as outputs during setup.
 
-Interrupt Pins
+(Actual levels depend on direction and pin wiring.)
 
-Three interrupt inputs control the switching state:
+5. Timing Sequence Chart
+Time ---> |---- ISR A ----|---- ISR A ----|---- ISR B ----|---- ISR B ----| ...
 
-Interrupt	Pin
-A	18
-B	19
-C	20
+Interrupt:      A                A               B                B
+State:          0               0'               1               1'
+HBX_second:     0 -> 1          1 -> 0          0 -> 1          1 -> 0
 
-Each interrupt maps to one of the system states (0, 1, or 2).
+Effective Step:
+                0               0'              1               1'
+```
 
-## System Behavior
+This continues for interrupt C:
 
-The program maintains two global switching parameters:
+ISR C → State 2 / 2'
 
-HBX_cycle_state: selects which H-Bridge sequence is active (0, 1, or 2)
+6. Technical Documentation
 
-HBX_second_half: toggles the polarity for a given phase
+The entire content above is already arranged in Markdown-safe format and suitable for GitHub.
+If needed, I can convert this into a polished final version with headings optimized for GitHub navigation.
 
-When an interrupt is triggered, the corresponding ISR sets the new HBX_cycle_state and toggles HBX_second_half.
-This results in a deterministic six-step switching routine, cycling through:
+7. Advanced Usage Notes
+Debouncing Interrupts
 
-Phase 0 (normal / inverted)
+Mechanical switches will emit multiple edges.
+Consider:
 
-Phase 1 (normal / inverted)
+Hardware RC filter
 
-Phase 2 (normal / inverted)
+Software debounce inside ISR (not recommended for long waits)
 
-This structure is appropriate for commutation routines commonly used in multi-phase motor control.
+Lockout flag in main loop
 
-Core Function: switchPair()
+Using the System for BLDC Motors
 
-The switchPair() function configures the logic levels for the four pins of a given H-Bridge.
-It accepts the following parameters:
+The six-step switching aligns with trapezoidal BLDC commutation.
+You may integrate:
 
-HBX[4]: pin array for the selected H-Bridge
+Back-EMF sensing
 
-direction: sets the logical polarity
+Hall sensor inputs
 
-off: forces all outputs LOW if true
+Speed control (PID)
 
-Pins A1/A2 and B1/B2 are assigned complementary levels depending on the direction and state.
+PWM modulation instead of static HIGH/LOW
 
-## Usage
+Using PWM
 
-Upload the code to your Arduino board.
+To integrate PWM:
 
-Connect three H-Bridges to the defined output pins.
+Replace digitalWrite() calls with analogWrite() on compatible pins
 
-Provide stable power to the driver stages.
+Ensure your motor driver supports PWM on both high and low sides
 
-Connect external trigger signals to pins 18, 19, and 20.
+Expanding to more phases
 
-Trigger any interrupt input to cycle through the switching pattern.
+Add additional arrays:
 
-## Safety Notes
+int HBD[] = {14, 15, 16, 17};
 
-Ensure that H-Bridges are not enabled without proper load conditions.
 
-Verify that your driver hardware supports the switching pattern used here.
+Increase state cycle accordingly.
 
-Mechanical switches on interrupt lines may require debouncing to prevent unintended state changes.
+8. Technical Documentation Section
+Interrupt Handling
 
-Incorrect HIGH/LOW configurations can cause shoot-through in certain H-Bridge designs; verify compatibility before use.
+The firmware uses edge-triggered interrupts (RISING).
+Each ISR:
 
-## License
+Sets HBX_cycle_state
 
-This project is licensed under the GNU Afferro General Public License (AGPL) and copyrighted to Carl Öttinger
+Toggles HBX_second_half
 
-Copyright © 2025 Carl Öttinger
+Returns immediately (no delays)
+
+This ensures minimal interrupt latency.
+
+Switching Logic
+
+The loop continuously applies output levels based on global state values.
+This design avoids performing I/O writes inside ISRs.
+
+Safety Considerations
+
+Ensure your H-Bridge design prevents shoot-through
+
+Never activate both high-side switches simultaneously
+
+Only use drivers with built-in dead-time or add firmware-based timing
+
+Confirm current capability and thermal limits of the driver hardware
