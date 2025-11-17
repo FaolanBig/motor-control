@@ -12,7 +12,7 @@ The following documentation describes system architecture, pin assignments, comm
 ```
                   +-----------------------+
                   |       Arduino         |
-                  |   (e.g. Mega 2560)   |
+                  |   (e.g. Mega 2560)    |
                   +----------+------------+
                              |
                              |
