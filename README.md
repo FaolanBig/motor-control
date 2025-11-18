@@ -212,4 +212,4 @@ The main loop continuously applies output levels based on global state values. T
 
 This project is licensed under the GNU Afferro General Public License to Carl Öttinger
 
-Copyright \copyright 2025 by Carl Öttinger
+Copyright © 2025 by Carl Öttinger
