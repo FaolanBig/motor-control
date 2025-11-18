@@ -130,9 +130,9 @@ Zeit ---> |---- ISR A ----|---- ISR A ----|---- ISR B ----|---- ISR B ----| ...
 
 Interrupt:        A               A                B               B
 Zustand:          0               0'               1               1'
-HBX_second:     0 -> 1          1 -> 0          0 -> 1          1 -> 0
+HBX_second:     0 -> 1          1 -> 0           0 -> 1          1 -> 0
 
-Effektiver Schritt: 0               0'               1               1'
+Effektiver Schritt: 0             0'               1               1'
 
 ```
 
@@ -264,9 +264,9 @@ The following documentation describes system architecture, pin assignments, comm
                  |                  |                  |
                  |                  |                  |
             +----+------------------+------------------+----+
-            |               Polarity Toggle                |
-            |         (HBX_second_half ^= 1)               |
-            +----------------------------------------------+
+            |               Polarity Toggle                 |
+            |         (HBX_second_half ^= 1)                |
+            +-----------------------------------------------+
 ```
 Each state has:
 
@@ -336,10 +336,10 @@ Legend:
 Time ---> |---- ISR A ----|---- ISR A ----|---- ISR B ----|---- ISR B ----| ...
 
 Interrupt:      A                A               B                B
-State:          0               0'               1               1'
-HBX_second:     0 -> 1          1 -> 0          0 -> 1          1 -> 0
+State:          0                0'              1                1'
+HBX_second:   0 -> 1           1 -> 0          0 -> 1           1 -> 0
 
-Effective Step: 0               0'               1               1'
+Effective Step: 0                0'              1                1'
 
 ```
 
