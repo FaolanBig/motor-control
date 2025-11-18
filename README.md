@@ -1,4 +1,211 @@
-# H-Bridge Switching System
+# H-Brücken-Schaltsystem (Deutsch German DE)
+
+Dieses Projekt bietet einen Arduino-basierten Controller für drei H-Brücken-Stufen (HBA, HBB, HBC).  
+Die Schaltlogik ist interruptgesteuert und implementiert ein sechsstufiges Kommutierungsmuster, das für mehrphasige Lasten wie BLDC-Motoren oder ähnliche phasengesteuerte Systeme geeignet ist.
+
+Die folgende Dokumentation beschreibt die Systemarchitektur, die Pinbelegung, das Kommutierungsverhalten, das Timing und erweiterte Nutzungsoptionen.
+
+---
+
+## 1. Systemarchitektur (ASCII-Blockdiagramm)
+
+```
+                  +---------------------- -+
+                  |       Arduino          |
+                  |   (z. B. Mega 2560)    |
+                  +----------+------------+
+                             |
+                             |
+            +----------------+----------------+
+            |                |                |
+    Interrupt A        Interrupt B      Interrupt C
+        Pin 18            Pin 19            Pin 20
+            |                |                |
+    +-------+-------+ +------+-------+ +------+-------+
+    |  ISR switch_A | | ISR switch_B | | ISR switch_C |
+    +-------+-------+ +------+-------+ +------+-------+
+            |                |                |
+            +---------+------+---------+------+
+                      |                |
+        HBX_cycle_state (0–2)     HBX_second_half (Polarität)
+                      |                |
+                +-----+----------------+------+
+                |  Schaltlogik (Schleife)     |
+                +---------------+-------------+
+                                |
+             +------------------+----------------- -+
+             |                  |                  |
+       +-----+-----+      +-----+-----+      +-----+-----+
+       |   HBA     |      |   HBB     |      |   HBC     |
+       +-----------+      +-----------+      +-----------+
+       | A1 A2 B1 B2      | A1 A2 B1 B2      | A1 A2 B1 B2
+       | 2  3  4  5       | 6  7  8  9       | 10 11 12 13
+       +------------------+------------------+-------------+
+```
+
+## 2. Schaltzustandsdiagramm (6-Stufen-Sequenz)
+
+```
+       ┌────────────────────────────────────────┐
+       │               ZUSTANDSFLUSS            │
+       └────────────────────────────────────────┘
+
+            +-----------+        +-----------+        +-----------+
+            | Zustand 0 | -----> | Zustand 1 | -----> | Zustand 2 |
+            +-----+-----+        +----+------+        +----+------+
+                  ^                   ^                    ^
+                  |                   |                    |
+                  |                   |                    |
+            +-----+-------------------+--------------------+-----+
+            |               Polaritätsumschaltung                |
+            |              (HBX_second_half ^= 1)                |
+            +---------- -----------------------------------------+
+```
+Jeder Zustand hat:
+
+- Normale Version  
+- Invertierte Version (`second_half = 1`)
+
+Dies ergibt die folgende 6-stufige Kommutierung:
+
+```
+
+0 → 0' → 1 → 1' → 2 → 2' → Wiederholung
+(0' = invertierte Polarität von 0)
+
+```
+
+---
+
+## 3. Pinbelegungsreferenz
+
+### H-Brücken-Pinbelegungstabelle
+
+| H-Brücke | A1 | A2 | B1 | B2 |
+|----------|----|----|----|----|
+| HBA      | 2  | 3  | 4  | 5  |
+| HBB      | 6  | 7  | 8  | 9  |
+| HBC      | 10 | 11 | 12 | 13 |
+
+### Tabelle zur Zuordnung der Interrupt-Pins
+
+| Interrupt | Pin |
+|-----------|-----|
+| A         | 18  |
+| B         | 19  |
+| C         | 20  |
+
+---
+
+## 4. Kommutierungsdiagramm (Übersicht über die Wellenform)
+
+Nachfolgend finden Sie eine konzeptionelle Darstellung eines Phasenschaltmusters für eine 6-stufige Kommutierung:
+
+```
+
+Zeit --->
+
+Zustand: 0    1     2    1'    2'   3'
+
+HBA:    ++++ ....  ---- ----  .... ++++
+HBB:    ---- ++++  .... ....  ++++ ----
+HBC:    .... ----  ++++ ++++  ---- ....
+
+Legende:
+++++ = Vorwärtspolarität
+---- = Rückwärtspolarität....
+.... = Aus
+
+```
+
+> *(Die tatsächlichen Pegel hängen von der Richtung und der Pin-Verdrahtung ab.)*
+
+---
+
+## 5. Zeitablaufdiagramm
+
+```
+
+Zeit ---> |---- ISR A ----|---- ISR A ----|---- ISR B ----|---- ISR B ----| ...
+
+Interrupt:        A               A                B               B
+Zustand:          0               0'               1               1'
+HBX_second:     0 -> 1          1 -> 0          0 -> 1          1 -> 0
+
+Effektiver Schritt: 0               0'               1               1'
+
+```
+
+Dies setzt sich für Interrupt C fort:
+
+```
+
+ISR C → Status 2 / 2'
+
+````
+
+---
+
+## 6. Hinweise zur fortgeschrittenen Verwendung
+
+### Verwendung des Systems für BLDC-Motoren
+
+Die sechsstufige Umschaltung entspricht der trapezförmigen BLDC-Kommutierung. Mögliche Erweiterungen:
+
+- Back-EMF-Erkennung  
+- Hall-Sensor-Eingänge  
+- Drehzahlregelung (PID)  
+- PWM-Modulation anstelle von statischem HIGH/LOW  
+
+### Verwendung von PWM
+
+So integrieren Sie PWM:
+
+- Ersetzen Sie `digitalWrite()`-Aufrufe durch `analogWrite()` auf kompatiblen Pins  
+- Stellen Sie sicher, dass Ihr Motortreiber PWM sowohl auf der High- als auch auf der Low-Seite unterstützt  
+
+### Erweiterung auf weitere Phasen
+
+Fügen Sie zusätzliche Arrays hinzu:
+
+```cpp
+int HBD[] = {14, 15, 16, 17};
+````
+
+Erhöhen Sie den Statuszyklus entsprechend.
+
+---
+
+## 7. Technische Dokumentation
+
+### Interrupt-Behandlung
+
+Die Firmware verwendet flankengesteuerte Interrupts (RISING). Jeder ISR:
+
+1. Setzt `HBX_cycle_state`
+2. Schaltet `HBX_second_half` um
+3. Kehrt sofort zurück (keine Verzögerungen)
+
+Dadurch wird eine minimale Interrupt-Latenz gewährleistet.
+
+### Schaltlogik
+
+Die Hauptschleife wendet kontinuierlich Ausgangspegel basierend auf globalen Statuswerten an. Durch dieses Design wird vermieden, dass I/O-Schreibvorgänge innerhalb von ISRs durchgeführt werden.
+
+### Sicherheitshinweise
+
+* Stellen Sie sicher, dass Ihr H-Brücken-Design ein Durchschlagen verhindert.
+* Aktivieren Sie niemals beide High-Side-Schalter gleichzeitig (polarität prüfen).
+* Verwenden Sie nur Treiber mit integrierter Totzeit oder fügen Sie firmwarebasierte Zeitsteuerung hinzu.
+* Überprüfen Sie die Strombelastbarkeit und die thermischen Grenzen der Treiberhardware.
+
+## 8. Lizenz- und Copyright-Hinweis
+
+Dieses Projekt unterliegt der GNU Afferro General Public License
+
+Copyright © 2025 by Carl Öttinger
+
+# H-Bridge Switching System (English EN)
 
 This project provides an Arduino-based controller for three H-Bridge stages (HBA, HBB, HBC).  
 The switching logic is interrupt-driven and implements a six-step commutation pattern suitable for multi-phase loads such as BLDC motors or similar phase-driven systems.
@@ -105,17 +312,16 @@ Below is a conceptual representation of a phase switching pattern for 6-step com
 
 Time --->
 
-State:   0    0'    1    1'    2    2'
+State:    0    1    2    1'    2'   3'
 
-HBA:    ++++ ----  .... ....  **** ****
-HBB:    .... ....  ++++ ----  .... ....
-HBC:    .... ....  .... ....  ++++ ----
+HBA:    ++++ ....  ---- ----  .... ++++
+HBB:    ---- ++++  .... ....  ++++ ----
+HBC:    .... ----  ++++ ++++  ---- ....
 
 Legend:
 ++++ = forward polarity
 ---- = reverse polarity
 .... = off
-**** = polarity depends on half-cycle
 
 ```
 
@@ -148,14 +354,6 @@ ISR C → State 2 / 2'
 ---
 
 ## 6. Advanced Usage Notes
-
-### Debouncing Interrupts
-
-Mechanical switches can emit multiple edges. Consider:
-
-- Hardware RC filter  
-- Software debounce inside ISR (not recommended for long waits)  
-- Lockout flag in main loop  
 
 ### Using the System for BLDC Motors
 
@@ -204,12 +402,12 @@ The main loop continuously applies output levels based on global state values. T
 ### Safety Considerations
 
 * Ensure your H-Bridge design prevents shoot-through
-* Never activate both high-side switches simultaneously
+* Never activate both high-side switches simultaneously (check polarity)
 * Only use drivers with built-in dead-time or add firmware-based timing
 * Confirm current capability and thermal limits of the driver hardware
 
 ## 8. License and Copyright Notice
 
-This project is licensed under the GNU Afferro General Public License to Carl Öttinger
+This project is licensed under the GNU Afferro General Public License
 
 Copyright © 2025 by Carl Öttinger
