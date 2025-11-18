@@ -13,7 +13,7 @@ Die folgende Dokumentation beschreibt die Systemarchitektur, die Pinbelegung, da
                   +---------------------- -+
                   |       Arduino          |
                   |   (z. B. Mega 2560)    |
-                  +----------+------------+
+                  +----------+-------------+
                              |
                              |
             +----------------+----------------+
