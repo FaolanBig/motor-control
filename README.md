@@ -1,3 +1,10 @@
+## Navigation
+
+* [Deutsch German DE](https://github.com/FaolanBig/motor-control/edit/main/README.md#h-br%C3%BCcken-schaltsystem-deutsch-german-de)
+* [English EN](https://github.com/FaolanBig/motor-control/edit/main/README.md#h-bridge-switching-system-english-en)
+
+---
+
 # H-Brücken-Schaltsystem (Deutsch German DE)
 
 Dieses Projekt bietet einen Arduino-basierten Controller für drei H-Brücken-Stufen (HBA, HBB, HBC).  
