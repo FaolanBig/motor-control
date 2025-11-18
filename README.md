@@ -1,7 +1,7 @@
 ## Navigation
 
-* [Deutsch German DE](https://github.com/FaolanBig/motor-control?tab=readme-ov-file#h-br%C3%BCcken-schaltsystem-deutsch-german-de)
-* [English EN](https://github.com/FaolanBig/motor-control?tab=readme-ov-file#h-bridge-switching-system-english-en)
+* [DE Deutsch German](https://github.com/FaolanBig/motor-control?tab=readme-ov-file#h-br%C3%BCcken-schaltsystem-deutsch-german-de)
+* [EN English](https://github.com/FaolanBig/motor-control?tab=readme-ov-file#h-bridge-switching-system-english-en)
 
 ---
 
