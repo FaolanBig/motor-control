@@ -7,7 +7,7 @@ Die folgende Dokumentation beschreibt die Systemarchitektur, die Pinbelegung, da
 
 ---
 
-## 1. Systemarchitektur (ASCII-Blockdiagramm)
+## 1. Systemarchitektur
 
 ```
                   +---------------------- -+
@@ -214,7 +214,7 @@ The following documentation describes system architecture, pin assignments, comm
 
 ---
 
-## 1. System Architecture (ASCII Block Diagram)
+## 1. System Architecture
 
 ```
                   +-----------------------+
