@@ -25,8 +25,8 @@ Die folgende Dokumentation beschreibt die Systemarchitektur, die Pinbelegung, da
                              |
             +----------------+----------------+
             |                |                |
-    Interrupt A        Interrupt B      Interrupt C
-        Pin 18            Pin 19            Pin 20
+       Interrupt A      Interrupt B      Interrupt C
+         Pin 18           Pin 19           Pin 20
             |                |                |
     +-------+-------+ +------+-------+ +------+-------+
     |  ISR switch_A | | ISR switch_B | | ISR switch_C |
@@ -38,16 +38,17 @@ Die folgende Dokumentation beschreibt die Systemarchitektur, die Pinbelegung, da
                       |                |
                 +-----+----------------+------+
                 |  Schaltlogik (Schleife)     |
-                +---------------+-------------+
-                                |
-             +------------------+----------------- -+
-             |                  |                  |
-       +-----+-----+      +-----+-----+      +-----+-----+
-       |   HBA     |      |   HBB     |      |   HBC     |
-       +-----------+      +-----------+      +-----------+
-       | A1 A2 B1 B2      | A1 A2 B1 B2      | A1 A2 B1 B2
-       | 2  3  4  5       | 6  7  8  9       | 10 11 12 13
-       +------------------+------------------+-------------+
+                +----------------+------------+
+                                 |
+                                 |
+             +-------------------+-------------------+
+             |                   |                   |
+       +-----+-------+     +-----+-------+     +-----+-------+
+       |    HBA      |     |   HBB       |     |   HBC       |
+       +-------------+     +-------------+     +-------------+
+       | A1 A2 B1 B2 |     | A1 A2 B1 B2 |     | A1 A2 B1 B2 |
+       | 2  3  4  5  |     | 6  7  8  9  |     | 10 11 12 13 |
+       +-------------+-----+-------------+-----+-------------+
 ```
 
 ## 2. Schaltzustandsdiagramm (6-Stufen-Sequenz)
@@ -232,8 +233,8 @@ The following documentation describes system architecture, pin assignments, comm
                              |
             +----------------+----------------+
             |                |                |
-    Interrupt A        Interrupt B      Interrupt C
-        Pin 18            Pin 19            Pin 20
+       Interrupt A      Interrupt B      Interrupt C
+         Pin 18           Pin 19           Pin 20
             |                |                |
     +-------+-------+ +------+-------+ +------+-------+
     |  ISR switch_A | | ISR switch_B | | ISR switch_C |
@@ -245,16 +246,16 @@ The following documentation describes system architecture, pin assignments, comm
                       |                |
                 +-----+----------------+------+
                 |  Switching Logic (loop)     |
-                +---------------+-------------+
-                                |
-             +------------------+------------------+
-             |                  |                  |
-       +-----+-----+      +-----+-----+      +-----+-----+
-       |   HBA     |      |   HBB     |      |   HBC     |
-       +-----------+      +-----------+      +-----------+
-       | A1 A2 B1 B2      | A1 A2 B1 B2      | A1 A2 B1 B2
-       | 2  3  4  5       | 6  7  8  9       | 10 11 12 13
-       +------------------+------------------+-------------+
+                +----------------+------------+
+                                 |
+             +-------------------+-------------------+
+             |                   |                   |
+       +-----+-------+     +-----+-------+     +-----+-------+
+       |    HBA      |     |   HBB       |     |   HBC       |
+       +-------------+     +-------------+     +-------------+
+       | A1 A2 B1 B2 |     | A1 A2 B1 B2 |     | A1 A2 B1 B2 |
+       | 2  3  4  5  |     | 6  7  8  9  |     | 10 11 12 13 |
+       +-------------+-----+-------------+-----+-------------+
 ```
 
 ## 2. Switching-State Diagram (6-Step Sequence)
