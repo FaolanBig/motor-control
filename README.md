@@ -210,6 +210,7 @@ Die Hauptschleife wendet kontinuierlich Ausgangspegel basierend auf globalen Sta
 ## 8. Lizenz- und Copyright-Hinweis
 
 Dieses Projekt unterliegt der GNU Afferro General Public License
+> Details finden Sie unter [LICENSE](./LICENSE.txt)
 
 Copyright © 2025 by Carl Öttinger
 
@@ -417,5 +418,6 @@ The main loop continuously applies output levels based on global state values. T
 ## 8. License and Copyright Notice
 
 This project is licensed under the GNU Afferro General Public License
+> See [LICENSE](./LICENSE.txt) for details.
 
 Copyright © 2025 by Carl Öttinger
