@@ -20,9 +20,18 @@ void switchPair(int HBX[4], bool direction = false, bool off = false); // might 
 
 void setup()
 {
-    for (auto &&i : HBA) { pinMode(i, OUTPUT); }
-    for (auto &&i : HBB) { pinMode(i, OUTPUT); }
-    for (auto &&i : HBC) { pinMode(i, OUTPUT); }
+    // for (auto &&i : HBA) { pinMode(i, OUTPUT); }
+    // for (auto &&i : HBB) { pinMode(i, OUTPUT); }
+    // for (auto &&i : HBC) { pinMode(i, OUTPUT); }
+    // for (int i = 0; i < 4; i++) { pinMode(HBA[i], OUTPUT); }
+    // for (int i = 0; i < 4; i++) { pinMode(HBB[i], OUTPUT); }
+    // for (int i = 0; i < 4; i++) { pinMode(HBC[i], OUTPUT); }
+    for (int i = 0; i < 4; i++)
+    {
+        pinMode(HBA[i], OUTPUT);
+        pinMode(HBB[i], OUTPUT);
+        pinMode(HBC[i], OUTPUT);
+    }
 
     // initializing interrupts
     attachInterrupt(digitalPinToInterrupt(HBX_interrupt_pins[0]), switch_A, RISING); // A
